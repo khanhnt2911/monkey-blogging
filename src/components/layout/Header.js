@@ -1,24 +1,25 @@
-import { Button } from "components/button";
-import { IconSearch } from "components/icon";
-import { useAuth } from "contexts/auth-context";
-import React from "react";
-import { NavLink } from "react-router-dom";
-import styled from "styled-components";
+import {Button} from 'components/button'
+import {IconSearch} from 'components/icon'
+import {useAuth} from 'contexts/auth-context'
+import {getAuth, signOut} from 'firebase/auth'
+import React from 'react'
+import {NavLink} from 'react-router-dom'
+import styled from 'styled-components'
 
 const menuLink = [
   {
-    url: "/",
-    title: "Home",
+    url: '/',
+    title: 'Home',
   },
   {
-    url: "/block",
-    title: "Block",
+    url: '/block',
+    title: 'Block',
   },
   {
-    url: "/contact",
-    title: "Contact",
+    url: '/contact',
+    title: 'Contact',
   },
-];
+]
 
 const HeaderStyle = styled.div`
   .header-main {
@@ -65,32 +66,50 @@ const HeaderStyle = styled.div`
     right: 5%;
     transform: translateY(-50%);
   }
-`;
+`
 
 const Header = () => {
-  const { userInfo } = useAuth();
+  const {userInfo} = useAuth()
+  const auth = getAuth()
 
   const getLastName = (name) => {
-    if (!name) return "User";
+    if (!name) return 'User'
 
-    const length = name.split(" ");
-    return length[length.length - 1];
-  };
+    const length = name.split(' ')
+    return length[length.length - 1]
+  }
+
+  // const handleSignOut = () => {
+  //   signOut(auth)
+  //     .then(() => {
+  //       console.log('Sign out !!!')
+  //     })
+  //     .catch((error) => {
+  //       console.log(error)
+  //     })
+  // }
 
   return (
     <HeaderStyle>
       <div className="container">
         <div className="header-main">
-          <NavLink to={"/"}>
-            <img className="logo" srcSet="logo.png 2x" alt="monkey-blogging" />
+          <NavLink to={'/'}>
+            <img
+              className="logo"
+              srcSet="logo.png 2x"
+              alt="monkey-blogging"
+            />
           </NavLink>
           <ul className="menu">
             {menuLink.map((item) => {
               return (
-                <li className="menu-item" key={item.title}>
+                <li
+                  className="menu-item"
+                  key={item.title}
+                >
                   <NavLink to={item.url}>{item.title}</NavLink>
                 </li>
-              );
+              )
             })}
           </ul>
           <div className="search">
@@ -108,9 +127,9 @@ const Header = () => {
               type="button"
               to="/sign-in"
               className="header-button"
-              style={{ height: "46px" }}
+              style={{height: '46px'}}
             >
-              {" "}
+              {' '}
               Sign up
             </Button>
           ) : (
@@ -121,8 +140,9 @@ const Header = () => {
           )}
         </div>
       </div>
+      {/* <button onClick={handleSignOut}>Sign out</button> */}
     </HeaderStyle>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
