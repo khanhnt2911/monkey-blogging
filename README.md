@@ -1,2 +1,1 @@
-# monkey-blogging
-# monkey-blogging
+- `npm install` -> `npm start`
