@@ -14,22 +14,26 @@ import useFirebase from 'hooks/useFirebase'
 import Toggle from 'components/toggle/Toggle'
 import {useEffect} from 'react'
 import {db} from 'firebase-app/firebase-app'
-import {collection, getDocs, query, where} from 'firebase/firestore'
+import {addDoc, collection, getDocs, query, where} from 'firebase/firestore'
+import {useAuth} from 'contexts/auth-context'
+import {toast} from 'react-toastify'
+import {setLocale} from 'yup'
 
 const PostAddNew = () => {
   const [categories, setCategories] = useState([])
+  const [category, setCategory] = useState({})
+  const {userInfo} = useAuth()
 
-  const {control, isSubmitting, watch, setValue, handleSubmit, getValues} =
-    useForm({
-      mode: 'onChange',
-      defaultValues: {
-        status: 2,
-        title: '',
-        slug: '',
-        categoryId: '',
-        hot: false,
-      },
-    })
+  const {control, watch, setValue, handleSubmit, getValues, reset} = useForm({
+    mode: 'onChange',
+    defaultValues: {
+      status: 2,
+      title: '',
+      slug: '',
+      categoryId: '',
+      hot: false,
+    },
+  })
   const watchStatus = watch('status')
   const watchCategory = watch('category')
   const watchHot = watch('hot')
@@ -41,10 +45,27 @@ const PostAddNew = () => {
 
   const addPostHandler = async (values) => {
     const cloneValues = {...values}
-    cloneValues.slug = slugify(cloneValues.slug || cloneValues.title)
+    cloneValues.slug = slugify(cloneValues.slug || cloneValues.title, {
+      lower: true,
+    })
     cloneValues.status = Number(cloneValues.status)
-    console.log(cloneValues)
-    // handleUploadImage(cloneValues.file);
+    const colRef = collection(db, 'posts')
+    await addDoc(colRef, {
+      ...cloneValues,
+      image,
+      userId: userInfo.uid,
+    })
+
+    toast.success('Create new post successfully!!!')
+    reset({
+      status: 2,
+      title: '',
+      slug: '',
+      categoryId: '',
+      hot: false,
+      image: '',
+    })
+    setCategory({})
   }
 
   useEffect(() => {
@@ -63,6 +84,12 @@ const PostAddNew = () => {
     }
     getData()
   }, [])
+
+  const handleSelectOption = (item) => {
+    if (!item) return
+    setValue('categoryId', item.id)
+    setCategory(item)
+  }
 
   return (
     <>
@@ -104,14 +131,14 @@ const PostAddNew = () => {
           <Field>
             <Label>Category</Label>
             <Dropdown>
-              <Dropdown.Select placeholder="Select the category" />
+              <Dropdown.Select
+                placeholder={`${category.name || 'Select the category'}`}
+              />
               <Dropdown.List>
                 {categories.length > 0 &&
                   categories.map((item) => (
                     <Dropdown.Option
-                      onClick={() => {
-                        setValue('categoryId', item.id)
-                      }}
+                      onClick={() => handleSelectOption(item)}
                       key={item.id}
                     >
                       {item.name}
@@ -119,6 +146,11 @@ const PostAddNew = () => {
                   ))}
               </Dropdown.List>
             </Dropdown>
+            {category?.name ? (
+              <span className="category p-3  inline-block rounded-lg bg-green-100 text-sm font-medium text-green-600 ">
+                {category?.name}
+              </span>
+            ) : null}
           </Field>
         </div>
         <div className="form-layout">
@@ -164,8 +196,8 @@ const PostAddNew = () => {
         <Button
           type="submit"
           className="mx-auto w-[250px]"
-          isLoading={isSubmitting}
-          disabled={isSubmitting}
+          // isLoading={isSubmitting}
+          // disabled={isSubmitting}
         >
           Add new post
         </Button>
