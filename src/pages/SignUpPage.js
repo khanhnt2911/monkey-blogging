@@ -13,7 +13,7 @@ import {toast} from 'react-toastify'
 import {createUserWithEmailAndPassword, updateProfile} from 'firebase/auth'
 import {auth, db} from 'firebase-app/firebase-app'
 import {NavLink, Navigate, useNavigate} from 'react-router-dom'
-import {addDoc, collection} from 'firebase/firestore'
+import {addDoc, collection, doc, setDoc} from 'firebase/firestore'
 import Authentication from './Authentication'
 import InputPasswordToggle from 'components/input/InputPasswordToggle'
 
@@ -73,6 +73,7 @@ const SignUpPage = () => {
         updateProfile(auth.currentUser, {
           displayName: values.fullname,
         })
+        console.log(user.uid)
         toast.success('Create success !!!', {
           position: 'top-right',
           autoClose: 2000,
@@ -84,13 +85,12 @@ const SignUpPage = () => {
           theme: 'light',
         })
 
-        const colRef = collection(db, 'users')
-
-        addDoc(colRef, {
+        setDoc(doc(db, 'users', user.uid), {
           fullname: values.fullname,
           email: values.email,
           password: values.password,
         })
+
         navigate('/sign-in')
       })
       .catch((error) => {

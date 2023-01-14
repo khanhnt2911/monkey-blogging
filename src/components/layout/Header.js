@@ -79,15 +79,15 @@ const Header = () => {
     return length[length.length - 1]
   }
 
-  // const handleSignOut = () => {
-  //   signOut(auth)
-  //     .then(() => {
-  //       console.log('Sign out !!!')
-  //     })
-  //     .catch((error) => {
-  //       console.log(error)
-  //     })
-  // }
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        console.log('Sign out !!!')
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
 
   return (
     <HeaderStyle>
@@ -140,7 +140,7 @@ const Header = () => {
           )}
         </div>
       </div>
-      {/* <button onClick={handleSignOut}>Sign out</button> */}
+      <button onClick={handleSignOut}>Sign out</button>
     </HeaderStyle>
   )
 }

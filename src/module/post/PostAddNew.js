@@ -14,7 +14,14 @@ import useFirebase from 'hooks/useFirebase'
 import Toggle from 'components/toggle/Toggle'
 import {useEffect} from 'react'
 import {db} from 'firebase-app/firebase-app'
-import {addDoc, collection, getDocs, query, where} from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  getDocs,
+  query,
+  serverTimestamp,
+  where,
+} from 'firebase/firestore'
 import {useAuth} from 'contexts/auth-context'
 import {toast} from 'react-toastify'
 import {setLocale} from 'yup'
@@ -22,6 +29,7 @@ import {setLocale} from 'yup'
 const PostAddNew = () => {
   const [categories, setCategories] = useState([])
   const [category, setCategory] = useState({})
+  const [loading, setLoading] = useState(false)
   const {userInfo} = useAuth()
 
   const {control, watch, setValue, handleSubmit, getValues, reset} = useForm({
@@ -38,34 +46,43 @@ const PostAddNew = () => {
   const watchCategory = watch('category')
   const watchHot = watch('hot')
 
-  const {image, progress, handleDeleteImage, handleSelectImage} = useFirebase(
-    setValue,
-    getValues
-  )
-
+  const {image, progress, setImage, handleDeleteImage, handleSelectImage} =
+    useFirebase(setValue, getValues)
   const addPostHandler = async (values) => {
-    const cloneValues = {...values}
-    cloneValues.slug = slugify(cloneValues.slug || cloneValues.title, {
-      lower: true,
-    })
-    cloneValues.status = Number(cloneValues.status)
-    const colRef = collection(db, 'posts')
-    await addDoc(colRef, {
-      ...cloneValues,
-      image,
-      userId: userInfo.uid,
-    })
+    try {
+      setLoading(true)
+      const cloneValues = {...values}
+      cloneValues.slug = slugify(cloneValues.slug || cloneValues.title, {
+        lower: true,
+      })
+      cloneValues.status = Number(cloneValues.status)
+      const colRef = collection(db, 'posts')
+      await addDoc(colRef, {
+        ...cloneValues,
+        image,
+        userId: userInfo.uid,
+        createAt: serverTimestamp(),
+      })
 
-    toast.success('Create new post successfully!!!')
-    reset({
-      status: 2,
-      title: '',
-      slug: '',
-      categoryId: '',
-      hot: false,
-      image: '',
-    })
-    setCategory({})
+      toast.success('Create new post successfully!!!')
+      reset({
+        status: 2,
+        title: '',
+        slug: '',
+        categoryId: '',
+        hot: false,
+        image: '',
+        createAt: serverTimestamp(),
+      })
+      setImage('')
+      setCategory({})
+      setLoading(false)
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -195,9 +212,9 @@ const PostAddNew = () => {
         </div>
         <Button
           type="submit"
-          className="mx-auto w-[250px]"
-          // isLoading={isSubmitting}
-          // disabled={isSubmitting}
+          className="mx-auto w-[250px] max-x-[250px]"
+          isLoading={loading}
+          disabled={loading}
         >
           Add new post
         </Button>
