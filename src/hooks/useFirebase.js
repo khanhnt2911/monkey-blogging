@@ -70,5 +70,17 @@ export default function useFirebase(setValue, getValues) {
         console.log('Upload image fail', error)
       })
   }
-  return {image, progress, setImage, handleSelectImage, handleDeleteImage}
+
+  const handleResetUpload = () => {
+    setImage('')
+    setProgress(0)
+  }
+
+  return {
+    image,
+    progress,
+    handleResetUpload,
+    handleSelectImage,
+    handleDeleteImage,
+  }
 }

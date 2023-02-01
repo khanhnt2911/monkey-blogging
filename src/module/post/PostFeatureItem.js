@@ -1,12 +1,11 @@
 import styled from 'styled-components'
-// import slugify from "slugify";
+import slugify from 'slugify'
 import React, {useEffect, useState} from 'react'
 import PostTitle from './PostTitle'
 import PostMeta from './PostMeta'
 import PostImage from './PostImage'
 import PostCategory from './PostCategory'
-import {withErrorBoundary} from 'react-error-boundary'
-import {doc, getDoc, query, where} from 'firebase/firestore'
+import {doc, getDoc} from 'firebase/firestore'
 import {db} from 'firebase-app/firebase-app'
 
 const PostFeatureItemStyles = styled.div`
@@ -75,6 +74,10 @@ const PostFeatureItem = (props) => {
     }
     getUser()
   }, [data.userId])
+  const date = data?.createAt?.seconds
+    ? new Date(data?.createAt?.seconds * 1000)
+    : new Date()
+  const formatDate = new Date(date).toLocaleDateString('vi-VI')
 
   if (!data || !data.id) return null
 
@@ -85,22 +88,24 @@ const PostFeatureItem = (props) => {
       <div className="post-overlay"></div>
       <div className="post-content">
         <div className="post-top">
-          {category?.name && <PostCategory>{category.name}</PostCategory>}
+          {category?.name && (
+            <PostCategory to={category.slug}>{category.name}</PostCategory>
+          )}
           <PostMeta
             authorName={user?.fullname}
-            date="Mar 23"
+            to={slugify(user?.fullname || '', {lower: true})}
+            date={formatDate}
           ></PostMeta>
         </div>
-        <PostTitle size="big">{data.title}</PostTitle>
+        <PostTitle
+          size="big"
+          to={data.slug}
+        >
+          {data.title}
+        </PostTitle>
       </div>
     </PostFeatureItemStyles>
   )
 }
 // Example of error boundary
-export default withErrorBoundary(PostFeatureItem, {
-  FallbackComponent: (
-    <p className="p-3 text-red-500 bg-red-100">
-      Look like this component error
-    </p>
-  ),
-})
+export default PostFeatureItem

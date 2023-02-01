@@ -24,15 +24,21 @@ import {
 } from 'firebase/firestore'
 import {useAuth} from 'contexts/auth-context'
 import {toast} from 'react-toastify'
-import {setLocale} from 'yup'
 
 const PostAddNew = () => {
   const [categories, setCategories] = useState([])
   const [category, setCategory] = useState({})
-  const [loading, setLoading] = useState(false)
   const {userInfo} = useAuth()
 
-  const {control, watch, setValue, handleSubmit, getValues, reset} = useForm({
+  const {
+    control,
+    formState: {isSubmitting},
+    watch,
+    setValue,
+    handleSubmit,
+    getValues,
+    reset,
+  } = useForm({
     mode: 'onChange',
     defaultValues: {
       status: 2,
@@ -46,11 +52,20 @@ const PostAddNew = () => {
   const watchCategory = watch('category')
   const watchHot = watch('hot')
 
-  const {image, progress, setImage, handleDeleteImage, handleSelectImage} =
-    useFirebase(setValue, getValues)
+  const {
+    image,
+    progress,
+    handleResetUpload,
+    handleDeleteImage,
+    handleSelectImage,
+  } = useFirebase(setValue, getValues)
+
+  useEffect(() => {
+    document.title = 'Manage Add new Post'
+  }, [])
+
   const addPostHandler = async (values) => {
     try {
-      setLoading(true)
       const cloneValues = {...values}
       cloneValues.slug = slugify(cloneValues.slug || cloneValues.title, {
         lower: true,
@@ -64,7 +79,15 @@ const PostAddNew = () => {
         createAt: serverTimestamp(),
       })
 
-      toast.success('Create new post successfully!!!')
+      toast.success('Create new post successfully!!!', {
+        autoClose: 2000,
+        theme: 'light',
+      })
+
+      setCategory({})
+    } catch (error) {
+      console.log(error)
+    } finally {
       reset({
         status: 2,
         title: '',
@@ -72,23 +95,15 @@ const PostAddNew = () => {
         categoryId: '',
         hot: false,
         image: '',
-        createAt: serverTimestamp(),
       })
-      setImage('')
-      setCategory({})
-      setLoading(false)
-    } catch (error) {
-      console.log(error)
-      setLoading(false)
-    } finally {
-      setLoading(false)
+      handleResetUpload()
     }
   }
 
   useEffect(() => {
     async function getData() {
       const colRef = collection(db, 'categories')
-      const q = query(colRef, where('status', '==', 1))
+      const q = query(colRef, where('userId', '==', userInfo.uid))
       const querySnapshot = await getDocs(q)
       const result = []
       querySnapshot.forEach((doc) => {
@@ -213,8 +228,8 @@ const PostAddNew = () => {
         <Button
           type="submit"
           className="mx-auto w-[250px] max-x-[250px]"
-          isLoading={loading}
-          disabled={loading}
+          isLoading={isSubmitting}
+          disabled={isSubmitting}
         >
           Add new post
         </Button>

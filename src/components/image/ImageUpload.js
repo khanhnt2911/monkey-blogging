@@ -1,15 +1,15 @@
-import React, { Fragment } from "react";
-import PropTypes from "prop-types";
+import React, {Fragment} from 'react'
+import PropTypes from 'prop-types'
 
 const ImageUpload = (props) => {
   const {
     name,
-    className = "",
+    className = '',
     progress = 0,
-    image = "",
+    image = '',
     handleDeleteImage = () => {},
     ...rest
-  } = props;
+  } = props
   return (
     <label
       className={`cursor-pointer flex items-center justify-center border border-dashed w-full min-h-[200px] rounded-lg ${className} relative overflow-hidden group`}
@@ -36,7 +36,11 @@ const ImageUpload = (props) => {
       )}
       {image && (
         <Fragment>
-          <img src={image} className="object-cover w-full h-full" alt="" />
+          <img
+            src={image}
+            className="object-cover w-full h-full"
+            alt=""
+          />
           <button
             type="button"
             className="absolute z-10 flex items-center justify-center invisible w-16 h-16 text-red-500 transition-all bg-white rounded-full opacity-0 cursor-pointer group-hover:opacity-100 group-hover:visible"
@@ -68,12 +72,7 @@ const ImageUpload = (props) => {
         ></div>
       )}
     </label>
-  );
-};
-ImageUpload.propTypes = {
-  name: PropTypes.string,
-  className: PropTypes.string,
-  progress: PropTypes.number,
-  image: PropTypes.string,
-};
-export default ImageUpload;
+  )
+}
+
+export default ImageUpload

@@ -16,7 +16,7 @@ const HomeFeature = () => {
   useEffect(() => {
     async function getPost() {
       const colRef = collection(db, 'posts')
-      const q = query(colRef, where('userId', '==', userInfo.uid))
+      const q = query(colRef, where('userId', '==', userInfo?.uid))
       const result = []
       const querySnapshot = await getDocs(q)
       querySnapshot.forEach((doc) => {
@@ -28,7 +28,7 @@ const HomeFeature = () => {
       setPosts(result)
     }
     getPost()
-  }, [userInfo.uid])
+  }, [userInfo?.uid])
 
   if (posts.length <= 0) return null
   return (

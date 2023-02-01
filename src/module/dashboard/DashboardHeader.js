@@ -1,8 +1,8 @@
-import { Button } from "components/button";
-import { useAuth } from "contexts/auth-context";
-import React from "react";
-import { Link, NavLink } from "react-router-dom";
-import styled from "styled-components";
+import {Button} from 'components/button'
+import {useAuth} from 'contexts/auth-context'
+import React from 'react'
+import {Link, NavLink} from 'react-router-dom'
+import styled from 'styled-components'
 const DashboardHeaderStyles = styled.div`
   background-color: white;
   padding: 20px;
@@ -35,26 +35,44 @@ const DashboardHeaderStyles = styled.div`
     align-items: center;
     gap: 20px;
   }
-`;
+`
 
 const DashboardHeader = () => {
-  const { userInfo } = useAuth();
+  const {userInfo} = useAuth()
   return (
     <DashboardHeaderStyles>
-      <NavLink to="/" className="logo">
-        <img srcSet="/logo.png 2x" alt="monkey-blogging" className="logo" />
+      <NavLink
+        to="/"
+        className="logo"
+      >
+        <img
+          srcSet="/logo.png 2x"
+          alt="monkey-blogging"
+          className="logo"
+        />
         <span className="hidden lg:inline-block">Monkey Blogging</span>
       </NavLink>
       <div className="header-right">
-        <Button to="/manage/add-post" className="header-button" height="52px">
+        <Button
+          to="/manage/add-post"
+          className="header-button"
+          height="52px"
+        >
           Write new post
         </Button>
-        <Link to="/profile" className="header-avatar">
-          <img src={userInfo?.avatar} alt="" />
+        <Link
+          to="/profile"
+          className="header-avatar"
+        >
+          <img
+            // src={userInfo?.avatar}
+            srcSet="/logo.png 2x"
+            alt=""
+          />
         </Link>
       </div>
     </DashboardHeaderStyles>
-  );
-};
+  )
+}
 
-export default DashboardHeader;
+export default DashboardHeader

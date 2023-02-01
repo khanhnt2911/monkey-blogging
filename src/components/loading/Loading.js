@@ -1,10 +1,11 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react'
+import styled from 'styled-components'
 
 const LoadingStyled = styled.div`
   width: ${(props) => props.size};
   height: ${(props) => props.size};
-  border: ${(props) => props.borderSize} solid white;
+  border: ${(props) => props.borderSize} solid
+    ${(props) => props.color || 'white'};
   border-top: ${(props) => props.borderSize} solid transparent;
   border-bottom: ${(props) => props.borderSize} solid transparent;
   border-radius: 100rem;
@@ -16,11 +17,17 @@ const LoadingStyled = styled.div`
       transform: rotate(360deg);
     }
   }
-`;
+`
 
 const Loading = (props) => {
-  const { size = "40px", borderSize = "4px" } = props;
-  return <LoadingStyled size={size} borderSize={borderSize}></LoadingStyled>;
-};
+  const {size = '40px', borderSize = '4px'} = props
+  return (
+    <LoadingStyled
+      size={size}
+      borderSize={borderSize}
+      {...props}
+    ></LoadingStyled>
+  )
+}
 
-export default Loading;
+export default Loading

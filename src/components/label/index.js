@@ -1,2 +1,4 @@
-import Label from "./Label";
-export { Label };
+import Label from './Label'
+import LabelStatus from './LabelStatus'
+
+export {Label, LabelStatus}
